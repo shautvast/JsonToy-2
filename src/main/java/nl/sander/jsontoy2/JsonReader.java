@@ -5,6 +5,7 @@ import nl.sander.jsontoy2.readers.*;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -32,7 +33,7 @@ public class JsonReader {
         return readers.get(type);
     }
 
-    public static <T> void register(Class<T> type, JsonObjectReader<T> objectReader) {
+    static <T> void register(Class<T> type, JsonObjectReader<T> objectReader) {
         readers.put(type, objectReader);
     }
 
@@ -56,5 +57,6 @@ public class JsonReader {
         register(char.class, new CharReader());
         register(String.class, new StringReader());
         register(LocalDateTime.class, new LocalDateTimeReader());
+        register(List.class, new ListReader());
     }
 }

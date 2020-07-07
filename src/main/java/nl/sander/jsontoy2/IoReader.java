@@ -1,18 +1,22 @@
 package nl.sander.jsontoy2;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.*;
 
 public class IoReader {
     private static final int HEX_RADIX = 16;
     private final InputStream inputStream;
     private final ByteBuf characterBuffer = new ByteBuf();
     private final ByteBuf encodedCodePointBuffer = new ByteBuf(4);
+    private final ByteBuffer convertBuffer = ByteBuffer.allocate(4);
     private boolean escaping = false;
     private boolean encoded = false;
-    private final ByteBuffer convertBuffer = ByteBuffer.allocate(4);
     private byte current;
     private int linecount = 0;
+    private long charcount = 0;
 
     protected IoReader(InputStream inputStream) {
         this.inputStream = inputStream;
@@ -55,9 +59,9 @@ public class IoReader {
     }
 
     public Character readCharacter() {
-        eat('\"');
+        eatUntil('\"');
         char currentChar = (char) current;
-        eat('\"');
+        eatUntil('\"');
         return currentChar;
     }
 
@@ -88,9 +92,57 @@ public class IoReader {
         return characterBuffer.toString();
     }
 
+    public List<?> readList() {
+        List<Object> list = new ArrayList<>();
+
+        if (current != '[') {
+            throw new JsonReadException("no list found");
+        }
+        advance();
+        while (current != -1 && current != ']') {
+            Optional<Object> maybeValue = readValue();
+            if (maybeValue.isEmpty()) {
+                break;
+            } else {
+                list.add(maybeValue.get());
+                eatUntilAny(',');
+            }
+        }
+
+        return list;
+    }
+
+    private Optional<Object> readValue() {
+        Object value;
+        skipWhitespace();
+        if (current == ']') {
+            return Optional.empty();
+        } else if (current == '[') {
+            value = readList();
+        } else if (current == '{') {
+            value = readMap();
+        } else if (current == '\"') {
+            value = readString();
+        } else if (current == 'T' || current == 't' || current == 'F' || current == 'f') {
+            value = readBoolean();
+        } else {
+            String numeric = readNumeric();
+            double doubleValue = Double.parseDouble(numeric);
+            if ((int) doubleValue == doubleValue) {
+                value = (int) doubleValue;
+            } else {
+                value = doubleValue;
+            }
+        }
+        return Optional.of(value);
+    }
+
+    private Map<?, ?> readMap() {
+        return new HashMap<>();
+    }
 
     public String readString() {
-        eat('\"');
+        eatUntil('\"');
 
         characterBuffer.clear();
         boolean endOfString = false;
@@ -134,9 +186,6 @@ public class IoReader {
             }
             advance();
         }
-        if (current != -1) {
-            advance();
-        }
 
         return characterBuffer.toString();
     }
@@ -151,7 +200,8 @@ public class IoReader {
 
     void advance() {
         try {
-            current = (byte)inputStream.read();
+            current = (byte) inputStream.read();
+            System.out.println((charcount++) + ":" + (char) current);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -160,7 +210,7 @@ public class IoReader {
     void skipWhitespace() {
         try {
             while (current > -1 && Character.isWhitespace(current)) {
-                current = (byte)inputStream.read();
+                current = (byte) inputStream.read();
             }
             if (current == -1) {
                 throw new JsonReadException("end of source reached");
@@ -170,7 +220,7 @@ public class IoReader {
         }
     }
 
-    String eat(char until) {
+    String eatUntil(char until) {
         characterBuffer.clear();
 
         while (current > -1 && (current != until | Character.isWhitespace(current))) {
@@ -179,5 +229,25 @@ public class IoReader {
         }
         advance();
         return characterBuffer.toString();
+    }
+
+    String eatUntilAny(char... untilOrrChars) {
+        characterBuffer.clear();
+
+        while (current > -1 && (!contains(untilOrrChars, current) | Character.isWhitespace(current))) {
+            characterBuffer.add(current);
+            advance();
+        }
+        advance();
+        return characterBuffer.toString();
+    }
+
+    private boolean contains(char[] chars, byte search) {
+        for (char aChar : chars) {
+            if (search == aChar) {
+                return true;
+            }
+        }
+        return false;
     }
 }
