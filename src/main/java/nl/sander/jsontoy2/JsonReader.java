@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentMap;
  * public facade
  */
 public class JsonReader {
-    private static final ConcurrentMap<Class<?>, JsonObjectReader<?>> readers = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Class<?>, JsonValueReader<?>> readers = new ConcurrentHashMap<>();
 
     public static <T> T read(Class<T> type, InputStream reader) {
         return read(type, new IoReader(reader));
@@ -29,11 +30,11 @@ public class JsonReader {
 //        class.cast() does not work for primitives;
     }
 
-    private static <T> JsonObjectReader<?> getReader(Class<T> type) {
+    private static <T> JsonValueReader<?> getReader(Class<T> type) {
         return readers.get(type);
     }
 
-    static <T> void register(Class<T> type, JsonObjectReader<T> objectReader) {
+    static <T> void register(Class<T> type, JsonValueReader<T> objectReader) {
         readers.put(type, objectReader);
     }
 
@@ -58,5 +59,6 @@ public class JsonReader {
         register(String.class, new StringReader());
         register(LocalDateTime.class, new LocalDateTimeReader());
         register(List.class, new ListReader());
+        register(Map.class, new MapReader());
     }
 }

@@ -16,7 +16,6 @@ public class IoReader {
     private boolean encoded = false;
     private byte current;
     private int linecount = 0;
-    private long charcount = 0;
 
     protected IoReader(InputStream inputStream) {
         this.inputStream = inputStream;
@@ -93,11 +92,11 @@ public class IoReader {
     }
 
     public List<?> readList() {
-        List<Object> list = new ArrayList<>();
-
+        skipWhitespace();
         if (current != '[') {
             throw new JsonReadException("no list found");
         }
+        List<Object> list = new ArrayList<>();
         advance();
         while (current != -1 && current != ']') {
             Optional<Object> maybeValue = readValue();
@@ -105,17 +104,39 @@ public class IoReader {
                 break;
             } else {
                 list.add(maybeValue.get());
-                eatUntilAny(',');
+                eatUntil(',');
             }
         }
 
         return list;
     }
 
+    public Map<?, ?> readMap() {
+        HashMap<Object, Object> map = new HashMap<>();
+        skipWhitespace();
+        if (current != '{') {
+            throw new JsonReadException("no map found");
+        }
+        while (current != -1 && current != '}') {
+            skipWhitespace();
+            if (current == '"') {
+                String key = readString();
+                eatUntil(':');
+                skipWhitespace();
+                Optional<Object> maybeValue = readValue();
+                maybeValue.ifPresent(o -> map.put(key, o));
+                eatUntil(',');
+            } else {
+                advance();
+            }
+        }
+        return map;
+    }
+
     private Optional<Object> readValue() {
         Object value;
         skipWhitespace();
-        if (current == ']') {
+        if (current == ']' || current == '}') {
             return Optional.empty();
         } else if (current == '[') {
             value = readList();
@@ -137,10 +158,6 @@ public class IoReader {
         return Optional.of(value);
     }
 
-    private Map<?, ?> readMap() {
-        return new HashMap<>();
-    }
-
     public String readString() {
         eatUntil('\"');
 
@@ -158,7 +175,7 @@ public class IoReader {
                         endOfString = true;
                     }
                 } else {
-                    // json encoded string
+                    // unicode codepoint
                     if (current == 'u') {
                         encoded = true;
                     } else if (current == 'n') {
@@ -172,7 +189,7 @@ public class IoReader {
                         throw new JsonReadException("illegal escaped quote in line " + linecount);
                     } else {
                         if (encoded) {
-                            // load next 4 characters in special buffer
+                            // load next 4 characters in special buffer to convert to int
                             encodedCodePointBuffer.add(current);
                             if (encodedCodePointBuffer.length() == 4) {
                                 byte[] bytes = parseCodePoint();
@@ -201,7 +218,6 @@ public class IoReader {
     void advance() {
         try {
             current = (byte) inputStream.read();
-            System.out.println((charcount++) + ":" + (char) current);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -229,25 +245,5 @@ public class IoReader {
         }
         advance();
         return characterBuffer.toString();
-    }
-
-    String eatUntilAny(char... untilOrrChars) {
-        characterBuffer.clear();
-
-        while (current > -1 && (!contains(untilOrrChars, current) | Character.isWhitespace(current))) {
-            characterBuffer.add(current);
-            advance();
-        }
-        advance();
-        return characterBuffer.toString();
-    }
-
-    private boolean contains(char[] chars, byte search) {
-        for (char aChar : chars) {
-            if (search == aChar) {
-                return true;
-            }
-        }
-        return false;
     }
 }
