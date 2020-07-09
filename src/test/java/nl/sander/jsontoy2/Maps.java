@@ -2,7 +2,10 @@ package nl.sander.jsontoy2;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,32 +36,33 @@ public class Maps {
 
     @Test
     public void multipleStrings_noColon_error() {
-        assertThrows(JsonReadException.class, () -> JsonReader.read(Map.class, " {\"hello\" \"jason\"}"));
+        assertThrows(JsonParseException.class, () -> JsonReader.read(Map.class, " {\"hello\" \"jason\"}"));
     }
 
     @Test
     public void singleInts() {
-        Map<String,Integer> map = JsonReader.read(Map.class, " { \"1\":2 }");
-        Map<String,Integer> expected = Collections.singletonMap("1",2);
+        Map<String, Integer> map = JsonReader.read(Map.class, " { \"1\":2 }");
+        Map<String, Integer> expected = Collections.singletonMap("1", 2);
         assertEquals(expected, map);
     }
 
     @Test
-    @SuppressWarnings("raw")
+    @SuppressWarnings("rawtypes")
     public void nestedMap() {
-        Map<String,Map> list = JsonReader.read(Map.class, "{\"map\": {\"map\":{}}}");
-        Map<String,Map> expected = new HashMap<>();
-        HashMap<String,Map> n1 = new HashMap<>();
-        n1.put("map",new HashMap<>());
+        Map<String, Map> list = JsonReader.read(Map.class, "{\"map\": {\"map\":{}}}");
+        Map<String, Map> expected = new HashMap<>();
+        HashMap<String, Map> n1 = new HashMap<>();
+        n1.put("map", new HashMap<>());
         expected.put("map", n1);
 
         assertEquals(expected, list);
     }
 
     @Test
-    public void listInMap(){
-        Map<String,List> list = JsonReader.read(Map.class, " { \"list\" : [ 1 ] } ");
-        Map<String,List> expected = new HashMap<>();
+    @SuppressWarnings("rawtypes")
+    public void listInMap() {
+        Map<String, List> list = JsonReader.read(Map.class, " { \"list\" : [ 1 ] } ");
+        Map<String, List> expected = new HashMap<>();
         expected.put("list", List.of(1));
 
         assertEquals(expected, list);

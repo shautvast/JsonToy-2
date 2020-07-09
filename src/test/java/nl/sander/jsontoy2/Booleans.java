@@ -2,14 +2,23 @@ package nl.sander.jsontoy2;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Booleans {
 
     @Test
     public void testTrue() {
         assertEquals(true, JsonReader.read(Boolean.class, "true"));
+    }
+
+    @Test
+    public void testIllegalTrue() {
+        assertThrows(JsonParseException.class, () -> JsonReader.read(Boolean.class, "TRUE"));
+    }
+
+    @Test
+    public void testIllegalFalse() {
+        assertThrows(JsonParseException.class, () -> JsonReader.read(Boolean.class, "False"));
     }
 
     @Test

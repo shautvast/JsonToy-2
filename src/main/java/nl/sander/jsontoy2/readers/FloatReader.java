@@ -1,12 +1,12 @@
 package nl.sander.jsontoy2.readers;
 
-import nl.sander.jsontoy2.IoReader;
 import nl.sander.jsontoy2.JsonValueReader;
+import nl.sander.jsontoy2.Parser;
 
 public class FloatReader implements JsonValueReader<Float> {
     @Override
-    public Float read(IoReader ioReader) {
-        return ioReader.readFloat();
+    public Float read(Parser parser) {
+        return parser.parseFloat();
     }
 
 }

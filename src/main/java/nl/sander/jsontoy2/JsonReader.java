@@ -16,17 +16,42 @@ import java.util.concurrent.ConcurrentMap;
 public class JsonReader {
     private static final ConcurrentMap<Class<?>, JsonValueReader<?>> readers = new ConcurrentHashMap<>();
 
+    /**
+     * reads a value for a type that is not known beforehand
+     *
+     * @param stream the underlying stream to read
+     * @return an Object with runtime type as follows:
+     * "null" => null
+     * "true"/"false" => Boolean
+     * integral number  => Integer //TODO Long?
+     * floating point number => Double
+     * string => String
+     * object => HashMap
+     * array => List
+     */
+    public static Object read(InputStream stream) {
+        return read(new Parser(stream));
+    }
+
+    public static Object read(String jsonString) {
+        return read(new Parser(jsonString));
+    }
+
+    static Object read(Parser parser) {
+        return parser.parseAny();
+    }
+
     public static <T> T read(Class<T> type, InputStream reader) {
-        return read(type, new IoReader(reader));
+        return read(type, new Parser(reader));
     }
 
     public static <T> T read(Class<T> type, String jsonString) {
-        return read(type, new IoReader(jsonString));
+        return read(type, new Parser(jsonString));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T read(Class<T> type, IoReader ioReader) {
-        return (T) getReader(type).read(ioReader);
+    static <T> T read(Class<T> type, Parser parser) {
+        return (T) getReader(type).read(parser);
 //        class.cast() does not work for primitives;
     }
 

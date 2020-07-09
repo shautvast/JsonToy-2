@@ -1,13 +1,14 @@
 package nl.sander.jsontoy2.readers;
 
-import nl.sander.jsontoy2.IoReader;
 import nl.sander.jsontoy2.JsonValueReader;
+import nl.sander.jsontoy2.Parser;
 
 import java.util.Map;
 
+@SuppressWarnings("rawtypes")
 public class MapReader implements JsonValueReader<Map> {
     @Override
-    public Map read(IoReader ioReader) {
-        return ioReader.readMap();
+    public Map read(Parser parser) {
+        return parser.parseObject();
     }
 }

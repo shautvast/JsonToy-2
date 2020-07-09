@@ -2,7 +2,9 @@ package nl.sander.jsontoy2;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -66,7 +68,14 @@ public class Lists {
     @Test
     public void mapInList() {
         List<Object> list = JsonReader.read(List.class, "[[],{\"list\":[]]}]");
-        List<?> expected = List.of(List.of(), Map.of("list",List.of()));
+        List<?> expected = List.of(List.of(), Map.of("list", List.of()));
+        assertEquals(expected, list);
+    }
+
+    @Test
+    public void nullInList() {
+        List<Object> list = JsonReader.read(List.class, "[null]");
+        List<?> expected = Collections.singletonList(null);
         assertEquals(expected, list);
     }
 }

@@ -2,8 +2,6 @@ package nl.sander.jsontoy2;
 
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.CharacterCodingException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -15,24 +13,19 @@ public class Strings {
     }
 
     @Test
-    public void firstSurrogateButSecondMissing() throws NoSuchFieldException, IllegalAccessException {
-        String value = JsonReader.read(String.class, "\"\\uDADA\"");
-
-        assertEquals("\u0000\u0000��", value); // question mark
+    public void firstSurrogateButSecondMissing() {
+        assertThrows(JsonParseException.class, () -> JsonReader.read(String.class, "\"\\uDADA\""));
     }
-
 
     @Test
     public void incompleteSurrogateAndEscapeValid() {
-        String value = JsonReader.read(String.class, " \"\\uD800\n\"");
-        assertEquals("\u0000\u0000�\u0000\n", value);
+        assertThrows(JsonParseException.class, () -> JsonReader.read(String.class, " \"\\uD800\n\""));
     }
 
     @Test
-    public void firstValidSurrogateSecondInvalid() throws CharacterCodingException {
+    public void firstValidSurrogateSecondInvalid() {
         String value = JsonReader.read(String.class, "\"\\uD888\\u1334\"");
-
-        assertEquals("\u0000\u0000؈\u0000\u0000\u00134", value);
+        assertEquals("?", value);
     }
 
     @Test
@@ -43,7 +36,7 @@ public class Strings {
 
     @Test
     public void escapedSingleQuote() {
-        assertThrows(JsonReadException.class, () -> JsonReader.read(String.class, "\"\\'\""));
+        assertThrows(JsonParseException.class, () -> JsonReader.read(String.class, "\"\\'\""));
     }
 
 }

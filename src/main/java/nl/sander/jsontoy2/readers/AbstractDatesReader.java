@@ -1,15 +1,10 @@
 package nl.sander.jsontoy2.readers;
 
-import nl.sander.jsontoy2.IoReader;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class AbstractDatesReader<T> {

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.CharacterCodingException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StringsWithJackson {
@@ -19,27 +17,25 @@ public class StringsWithJackson {
     }
 
     @Test
-    public void firstSurrogateButSecondMissing() throws NoSuchFieldException, IllegalAccessException, JsonProcessingException {
-        String value =jackson.readValue("\"\\uDADA\"", String.class);
-
-        assertTrue(true);
+    public void firstSurrogateButSecondMissing() throws JsonProcessingException {
+        String value = jackson.readValue("\"\\uDADA\"", String.class);
     }
 
 
     @Test
-    public void incompleteSurrogateAndEscapeValid() throws JsonProcessingException {
+    public void incompleteSurrogateAndEscapeValid() {
         assertThrows(JsonParseException.class, () -> jackson.readValue("\"\\uD800\n\"", String.class));
     }
 
     @Test
     public void firstValidSurrogateSecondInvalid() throws JsonProcessingException {
-        String value =jackson.readValue("\"\\uD888\\u1334\"", String.class);
+        String value = jackson.readValue("\"\\uD888\\u1334\"", String.class);
         assertTrue(true);
     }
 
     @Test
     public void escapedDoubleQuote() throws JsonProcessingException {
-        String value =jackson.readValue("\"\\\"\"", String.class);
+        String value = jackson.readValue("\"\\\"\"", String.class);
         assertEquals("\"", value);
     }
 

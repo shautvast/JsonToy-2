@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.*;
 
 /**
- * storage like ArrayList, with specialized array
+ * storage like ArrayList, with bytebuffer instead of array
  */
 public class ByteBuf {
 
@@ -19,19 +19,22 @@ public class ByteBuf {
     }
 
     public String toString() {
+        return toString(StandardCharsets.UTF_8);
+    }
+
+    public String toString(Charset charset) {
         data.flip();
 
-        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder(); // decode is not threadsafe, might put it in threadlocal
+        CharsetDecoder decoder = charset.newDecoder(); // decode is not threadsafe, might put it in threadlocal
         // but I don't think this (newDecoder()+config) is expensive
 
         decoder.onMalformedInput(CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE)
-                ;
+                .onUnmappableCharacter(CodingErrorAction.REPLACE);
 
         try {
             return decoder.decode(data).toString();
         } catch (CharacterCodingException e) {
-            throw new JsonReadException(e);
+            throw new JsonParseException(e);
         }
     }
 
