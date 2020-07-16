@@ -1,6 +1,5 @@
 package nl.sander.jsontoy2;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +25,14 @@ public class Parser extends Lexer {
         advance();
     }
 
-    protected Parser(String jsonString) {
-        super(new ByteArrayInputStream(jsonString.getBytes()));
+    public void init(InputStream inputStream) {
+        this.inputStream = inputStream;
+        linecount = 0;
+        charCount = 0;
+        escaping = false;
+        encoded = false;
+        encodedCodePointBuffer.clear();
+        characterBuffer.clear();
         advance();
     }
 
@@ -125,18 +130,23 @@ public class Parser extends Lexer {
         if (current != '{') {
             throw new JsonParseException("no map found");
         }
+        advance();
         while (current != -1 && current != '}') {
             skipWhitespace();
             if (current == '"') {
                 String key = parseString();
-                eatUntil(':');
+                skipWhitespace();
+                if (current == ':') {
+                    advance();
+                } else {
+                    throw new JsonParseException("expected colon");
+                }
                 skipWhitespace();
                 Maybe<Object> maybeValue = parseValue();
-                maybeValue.ifPresent(o -> map.put(key, o));
-                eatUntil(',');
-            } else {
-                advance();
+                maybeValue.ifPresent(value -> map.put(key, value));
             }
+            advance();
+            skipWhitespace();
         }
         return map;
     }
@@ -275,4 +285,6 @@ public class Parser extends Lexer {
             return true;
         }
     }
+
+
 }
