@@ -1,10 +1,10 @@
 package nl.sander.jsontoy2.java.constantpool;
 
 public class MethodHandleEntry extends ConstantPoolEntry {
-    private final short referenceKind;
-    private final short referenceIndex;
+    private final int referenceKind;
+    private final int referenceIndex;
 
-    public MethodHandleEntry(short referenceKind, short referenceIndex) {
+    public MethodHandleEntry(int referenceKind, int referenceIndex) {
         this.referenceKind = referenceKind;
         this.referenceIndex = referenceIndex;
     }

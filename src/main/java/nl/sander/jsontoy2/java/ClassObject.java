@@ -1,6 +1,7 @@
 package nl.sander.jsontoy2.java;
 
-import nl.sander.jsontoy2.java.constantpool.*;
+import nl.sander.jsontoy2.java.constantpool.ConstantPoolEntry;
+import nl.sander.jsontoy2.java.constantpool.Utf8Entry;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -9,116 +10,73 @@ import java.util.stream.Collectors;
 
 public class ClassObject<T> {
 
-    private int constantPoolCount;
     private ConstantPoolEntry[] constantPool;
-    private int constantPoolIndex = 0;
+    private Info[] fieldInfos;
+    private Info[] methodInfos;
 
-    public int getConstantPoolCount() {
-        return constantPoolCount;
+    private String getUtf8(int index) {
+        return ((Utf8Entry) constantPool[index - 1]).getUtf8();
+    }
+
+    public Set<Field> getFields() {
+        return Arrays.stream(fieldInfos)
+                .map(fi -> new Field(getUtf8(fi.getNameIndex()), getUtf8(fi.getDescriptorIndex())))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Method> getMethods() {
+        return Arrays.stream(methodInfos)
+                .map(mi -> new Method(getUtf8(mi.getNameIndex()), getUtf8(mi.getDescriptorIndex())))
+                .collect(Collectors.toSet());
     }
 
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < constantPoolCount - 1; i++) {
-            ConstantPoolEntry entry = constantPool[i];
+        for (ConstantPoolEntry entry : constantPool) {
             builder.append(entry.toString());
             builder.append(String.format("%n"));
         }
         return builder.toString();
     }
 
-    private void add(ConstantPoolEntry entry) {
-        constantPool[constantPoolIndex++] = entry;
-    }
-
-    public Set<Field> getFields() {
-        return Arrays.stream(constantPool)
-                .filter(e -> e instanceof FieldRefEntry)
-                .map(FieldRefEntry.class::cast)
-                .map(f -> {
-                    NameAndType nat = getNameAndType(f);
-                    return new Field(nat.getName(), nat.getType());
-                })
-                .collect(Collectors.toSet());
-    }
-
-    private NameAndType getNameAndType(FieldRefEntry f) {
-        NameAndTypeEntry natEntry = (NameAndTypeEntry) constantPool[f.getNameAndTypeIndex() - 1];
-        return new NameAndType(getUtf8(natEntry.getNameIndex()), getUtf8(natEntry.getTypeIndex()));
-    }
-
-    private String getUtf8(short index) {
-        return ((Utf8Entry) constantPool[index - 1]).getUtf8();
-    }
-
     public static class Builder<T> {
 
         private final ClassObject<T> classObject = new ClassObject<>();
+        private int constantPoolIndex = 0;
+        private int fieldInfoIndex = 0;
+        private int methodInfoIndex = 0;
 
         public ClassObject<T> build() {
             return classObject;
         }
 
         public Builder<T> constantPoolCount(int constantPoolCount) {
-            classObject.constantPoolCount = constantPoolCount;
-            classObject.constantPool = new ConstantPoolEntry[constantPoolCount];
+            classObject.constantPool = new ConstantPoolEntry[constantPoolCount - 1];
             return this;
         }
 
-        public void constantPoolEntry(String utf8) {
-            classObject.add(new Utf8Entry(utf8));
+        void constantPoolEntry(ConstantPoolEntry entry) {
+            classObject.constantPool[constantPoolIndex++] = entry;
         }
 
-        public void constantPoolEntry(int i) {
-            classObject.add(new IntEntry(i));
+        public Builder<T> fieldInfoCount(int fieldInfoCount) {
+            classObject.fieldInfos = new Info[fieldInfoCount];
+            return this;
         }
 
-        public void constantPoolEntry(float f) {
-            classObject.add(new FloatEntry(f));
+        public Builder<T> fieldInfo(Info fieldInfo) {
+            classObject.fieldInfos[fieldInfoIndex++] = fieldInfo;
+            return this;
         }
 
-        public void constantPoolEntry(long f) {
-            classObject.add(new LongEntry(f));
+        public Builder<T> methodInfoCount(int methodInfoCount) {
+            classObject.methodInfos = new Info[methodInfoCount];
+            return this;
         }
 
-        public void constantPoolEntry(double d) {
-            classObject.add(new DoubleEntry(d));
-        }
-
-        public void constantPoolClassEntry(short nameIndex) {
-            classObject.add(new ClassEntry(nameIndex));
-        }
-
-        public void constantPoolStringEntry(short utf8Index) {
-            classObject.add(new StringEntry(utf8Index));
-        }
-
-        public void constantPoolFieldRefEntry(short classIndex, short nameAndTypeIndex) {
-            classObject.add(new FieldRefEntry(classIndex, nameAndTypeIndex));
-        }
-
-        public void constantPoolMethodRefEntry(short classIndex, short nameAndTypeIndex) {
-            classObject.add(new MethodRefEntry(classIndex, nameAndTypeIndex));
-        }
-
-        public void constantPoolInterfaceMethodRefEntry(short classIndex, short nameAndTypeIndex) {
-            classObject.add(new InterfaceMethodRefEntry(classIndex, nameAndTypeIndex));
-        }
-
-        public void constantPoolNameAndTypeEntry(short nameIndex, short typeIndex) {
-            classObject.add(new NameAndTypeEntry(nameIndex, typeIndex));
-        }
-
-        public void constantPoolMethodHandleEntry(short referenceKind, short referenceIndex) {
-            classObject.add(new MethodHandleEntry(referenceKind, referenceIndex));
-        }
-
-        public void constantPoolMethodTypeEntry(short descriptorIndex) {
-            classObject.add(new MethodTypeEntry(descriptorIndex));
-        }
-
-        public void constantPoolInvokeDynamicEntry(short bootstrapMethodAttrIndex, short nameAndTypeIndex) {
-            classObject.add(new InvokeDynamicEntry(bootstrapMethodAttrIndex, nameAndTypeIndex));
+        public Builder<T> methodInfo(Info methodInfo) {
+            classObject.methodInfos[methodInfoIndex++] = methodInfo;
+            return this;
         }
     }
 }

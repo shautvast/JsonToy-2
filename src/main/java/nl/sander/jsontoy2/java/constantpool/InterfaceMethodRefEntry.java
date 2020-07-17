@@ -1,10 +1,10 @@
 package nl.sander.jsontoy2.java.constantpool;
 
 public class InterfaceMethodRefEntry extends ConstantPoolEntry {
-    private final short classIndex;
-    private final short nameAndTypeIndex;
+    private final int classIndex;
+    private final int nameAndTypeIndex;
 
-    public InterfaceMethodRefEntry(short classIndex, short nameAndTypeIndex) {
+    public InterfaceMethodRefEntry(int classIndex, int nameAndTypeIndex) {
         this.classIndex = classIndex;
         this.nameAndTypeIndex = nameAndTypeIndex;
     }

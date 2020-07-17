@@ -1,10 +1,10 @@
 package nl.sander.jsontoy2.java.constantpool;
 
 public class InvokeDynamicEntry extends ConstantPoolEntry {
-    private final short bootstrapMethodAttrIndex;
-    private final short nameAndTypeIndex;
+    private final int bootstrapMethodAttrIndex;
+    private final int nameAndTypeIndex;
 
-    public InvokeDynamicEntry(short bootstrapMethodAttrIndex, short nameAndTypeIndex) {
+    public InvokeDynamicEntry(int bootstrapMethodAttrIndex, int nameAndTypeIndex) {
         this.bootstrapMethodAttrIndex = bootstrapMethodAttrIndex;
         this.nameAndTypeIndex = nameAndTypeIndex;
     }

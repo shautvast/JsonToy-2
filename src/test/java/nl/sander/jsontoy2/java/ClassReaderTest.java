@@ -6,18 +6,14 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ClassParserTest {
+public class ClassReaderTest {
 
-    private int field;
+    public int field;
 
     @Test
     public void testReadClass() {
-        ClassObject<ClassParserTest> object = new ClassParser().parse(ClassParserTest.class);
+        ClassObject<ClassReaderTest> object = new ClassReader().parse(ClassReaderTest.class);
         assertEquals(Set.of(new Field("field", "I")), object.getFields());
-    }
-
-    // if not included, field is not in the compiled code.
-    public int getField() {
-        return field;
+        assertEquals(Set.of(new Method("<init>", "()V"), new Method("testReadClass", "()V")), object.getMethods());
     }
 }

@@ -1,9 +1,9 @@
 package nl.sander.jsontoy2.java.constantpool;
 
 public class StringEntry extends ConstantPoolEntry {
-    private final short utf8Index;
+    private final int utf8Index;
 
-    public StringEntry(short utf8Index) {
+    public StringEntry(int utf8Index) {
         this.utf8Index = utf8Index;
     }
 

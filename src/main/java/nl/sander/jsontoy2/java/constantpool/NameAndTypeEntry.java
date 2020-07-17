@@ -1,19 +1,19 @@
 package nl.sander.jsontoy2.java.constantpool;
 
 public class NameAndTypeEntry extends ConstantPoolEntry {
-    private final short nameIndex;
-    private final short typeIndex;
+    private final int nameIndex;
+    private final int typeIndex;
 
-    public NameAndTypeEntry(short nameIndex, short typeIndex) {
+    public NameAndTypeEntry(int nameIndex, int typeIndex) {
         this.nameIndex = nameIndex;
         this.typeIndex = typeIndex;
     }
 
-    public short getNameIndex() {
+    public int getNameIndex() {
         return nameIndex;
     }
 
-    public short getTypeIndex() {
+    public int getTypeIndex() {
         return typeIndex;
     }
 
