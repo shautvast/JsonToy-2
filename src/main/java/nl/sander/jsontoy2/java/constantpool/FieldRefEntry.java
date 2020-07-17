@@ -1,19 +1,19 @@
 package nl.sander.jsontoy2.java.constantpool;
 
 public class FieldRefEntry extends ConstantPoolEntry {
-    private final short classIndex;
-    private final short nameAndTypeIndex;
+    private final int classIndex;
+    private final int nameAndTypeIndex;
 
-    public FieldRefEntry(short classIndex, short nameAndTypeIndex) {
+    public FieldRefEntry(int classIndex, int nameAndTypeIndex) {
         this.classIndex = classIndex;
         this.nameAndTypeIndex = nameAndTypeIndex;
     }
 
-    public short getClassIndex() {
+    public int getClassIndex() {
         return classIndex;
     }
 
-    public short getNameAndTypeIndex() {
+    public int getNameAndTypeIndex() {
         return nameAndTypeIndex;
     }
 

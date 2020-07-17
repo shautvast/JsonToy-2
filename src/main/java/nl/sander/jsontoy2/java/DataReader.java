@@ -9,29 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 public class DataReader {
 
-    protected float readFloat(DataInputStream in) {
-        try {
-            return in.readFloat();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    protected Utf8Entry readUtf8Entry(DataInputStream in) {
-        short length = readShort(in);
-        return new Utf8Entry(readString(in, length));
-    }
-
-    protected String readString(DataInputStream in, short length) {
-        try {
-            byte[] bytes = in.readNBytes(length);
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    protected long readLong(DataInputStream in) {
+    protected long readS64(DataInputStream in) {
         try {
             return in.readLong();
         } catch (IOException e) {
@@ -39,7 +17,15 @@ public class DataReader {
         }
     }
 
-    protected double readDouble(DataInputStream in) {
+    protected float readF32(DataInputStream in) {
+        try {
+            return in.readFloat();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    protected double readF64(DataInputStream in) {
         try {
             return in.readDouble();
         } catch (IOException e) {
@@ -47,15 +33,7 @@ public class DataReader {
         }
     }
 
-    protected short readShort(DataInputStream in) {
-        try {
-            return in.readShort();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected int readUnsignedShort(DataInputStream in) {
+    protected int readU16(DataInputStream in) {
         try {
             return in.readUnsignedShort();
         } catch (IOException e) {
@@ -63,11 +41,25 @@ public class DataReader {
         }
     }
 
-    protected int readInt(DataInputStream in) {
+    protected int readS32(DataInputStream in) {
         try {
             return in.readInt();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected Utf8Entry readUtf8Entry(DataInputStream in) {
+        int length = readU16(in);
+        return new Utf8Entry(readString(in, length));
+    }
+
+    protected String readString(DataInputStream in, int length) {
+        try {
+            byte[] bytes = in.readNBytes(length);
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException();
         }
     }
 

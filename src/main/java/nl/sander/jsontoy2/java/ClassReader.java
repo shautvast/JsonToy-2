@@ -19,9 +19,9 @@ public class ClassReader extends DataReader {
         readConstantPool(in, builder);
 
         skip(in, 6); // u2 access_flags, u2 this_class, u2 super_class
-        int interfacesCount = readUnsignedShort(in);
-        skip(in, interfacesCount * 2); // interfaces[]
-        
+        int interfacesCount = readU16(in);
+        skip(in, interfacesCount * 2); // interfaces[u2;]
+
         readFields(in, builder);
         readMethods(in, builder);
 
@@ -29,7 +29,7 @@ public class ClassReader extends DataReader {
     }
 
     private <T> void readConstantPool(DataInputStream in, ClassObject.Builder<T> builder) {
-        int constantPoolCount = readUnsignedShort(in);
+        int constantPoolCount = readU16(in);
         builder.constantPoolCount(constantPoolCount);
         for (int i = 1; i < constantPoolCount; i++) {
             builder.constantPoolEntry(readConstantPoolEntry(in));
@@ -37,7 +37,7 @@ public class ClassReader extends DataReader {
     }
 
     private <T> void readFields(DataInputStream in, ClassObject.Builder<T> builder) {
-        int fieldInfoCount = readUnsignedShort(in);
+        int fieldInfoCount = readU16(in);
         builder.fieldInfoCount(fieldInfoCount);
         for (int i = 0; i < fieldInfoCount; i++) {
             builder.fieldInfo(readField(in));
@@ -45,7 +45,7 @@ public class ClassReader extends DataReader {
     }
 
     private <T> void readMethods(DataInputStream in, ClassObject.Builder<T> builder) {
-        int methodInfoCount = readUnsignedShort(in);
+        int methodInfoCount = readU16(in);
         builder.methodInfoCount(methodInfoCount);
         for (int i = 0; i < methodInfoCount; i++) {
             builder.methodInfo(readMethod(in));
@@ -53,7 +53,7 @@ public class ClassReader extends DataReader {
     }
 
     private <T> Info readField(DataInputStream in) {
-        Info fieldInfo = new Info(readUnsignedShort(in), readUnsignedShort(in), readUnsignedShort(in), readUnsignedShort(in));
+        Info fieldInfo = new Info(readU16(in), readU16(in), readU16(in), readU16(in));
         for (int i = 0; i < fieldInfo.getAttributesCount(); i++) {
             fieldInfo.add(readAttribute(in));
         }
@@ -62,7 +62,7 @@ public class ClassReader extends DataReader {
     }
 
     private <T> Info readMethod(DataInputStream in) {
-        Info methodInfo = new Info(readUnsignedShort(in), readUnsignedShort(in), readUnsignedShort(in), readUnsignedShort(in));
+        Info methodInfo = new Info(readU16(in), readU16(in), readU16(in), readU16(in));
         for (int i = 0; i < methodInfo.getAttributesCount(); i++) {
             methodInfo.add(readAttribute(in));
         }
@@ -71,8 +71,8 @@ public class ClassReader extends DataReader {
     }
 
     private AttributeInfo readAttribute(DataInputStream in) {
-        int attributeNameIndex = readUnsignedShort(in);
-        int attributeLength = readInt(in);
+        int attributeNameIndex = readU16(in);
+        int attributeLength = readS32(in);
         byte[] info;
         if (attributeLength > 0) {
             info = new byte[attributeLength];
@@ -92,19 +92,21 @@ public class ClassReader extends DataReader {
         switch (tag) {
             case 1: return readUtf8Entry(in);
             case 2: throw new IllegalStateException("2: invalid classpool tag");
-            case 3: return new IntEntry(readInt(in));
-            case 4: return new FloatEntry(readFloat(in));
-            case 5: return new LongEntry(readLong(in));
-            case 6: return new DoubleEntry(readDouble(in));
-            case 7: return new ClassEntry(readUnsignedShort(in));
-            case 8: return new StringEntry(readUnsignedShort(in));
-            case 9: return new FieldRefEntry(readShort(in), readShort(in));
-            case 10: return new MethodRefEntry(readUnsignedShort(in), readUnsignedShort(in));
-            case 11: return new InterfaceMethodRefEntry(readUnsignedShort(in), readUnsignedShort(in));
-            case 12: return new NameAndTypeEntry(readUnsignedShort(in), readUnsignedShort(in));
-            case 15: return new MethodHandleEntry(readUnsignedShort(in), readUnsignedShort(in));
-            case 16: return new MethodTypeEntry(readUnsignedShort(in));
-            case 18: return new InvokeDynamicEntry(readUnsignedShort(in), readUnsignedShort(in));
+            case 3: return new IntEntry(readS32(in));
+            case 4: return new FloatEntry(readF32(in));
+            case 5: return new LongEntry(readS64(in));
+            case 6: return new DoubleEntry(readF64(in));
+            case 7: return new ClassEntry(readU16(in));
+            case 8: return new StringEntry(readU16(in));
+            case 9: return new FieldRefEntry(readU16(in), readU16(in));
+            case 10: return new MethodRefEntry(readU16(in), readU16(in));
+            case 11: return new InterfaceMethodRefEntry(readU16(in), readU16(in));
+            case 12: return new NameAndTypeEntry(readU16(in), readU16(in));
+            case 15: return new MethodHandleEntry(readU16(in), readU16(in));
+            case 16: return new MethodTypeEntry(readU16(in));
+            case 18: return new InvokeDynamicEntry(readU16(in), readU16(in));
+            case 19: return new ModuleEntry(readU16(in));
+            case 20: return new PackageEntry(readU16(in));
             default: throw new IllegalStateException("invalid classpool");
         }
     }
