@@ -43,7 +43,7 @@ public class JsonReader {
      * array => List
      */
     public static Object read(InputStream inputStream) {
-        InputStream in = ensureBuffered(inputStream);
+        final InputStream in = ensureBuffered(inputStream);
         try (Parser parser = getParser(in)) {
             return read(parser);
         }

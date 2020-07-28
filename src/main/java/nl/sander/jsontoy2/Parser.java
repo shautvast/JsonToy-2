@@ -37,37 +37,37 @@ public class Parser extends Lexer {
     }
 
     public Integer parseInteger() {
-        String value = parseNumber();
+        final String value = parseNumber();
         return Double.valueOf(value).intValue();
     }
 
     public Long parseLong() {
-        String value = parseNumber();
+        final String value = parseNumber();
         return Long.parseLong(value);
     }
 
     public Float parseFloat() {
-        String value = parseNumber();
+        final String value = parseNumber();
         return Float.parseFloat(value);
     }
 
     public Double parseDouble() {
-        String value = parseNumber();
+        final String value = parseNumber();
         return Double.parseDouble(value);
     }
 
     public Short parseShort() {
-        String value = parseNumber();
+        final String value = parseNumber();
         return Short.parseShort(value);
     }
 
     public Byte parseByte() {
-        String value = parseNumber();
+        final String value = parseNumber();
         return Byte.parseByte(value);
     }
 
     public Character parseCharacter() {
-        String string = parseString();
+        final String string = parseString();
         return string.charAt(0);
     }
 
@@ -78,7 +78,7 @@ public class Parser extends Lexer {
             advance();
         }
 
-        String maybeBoolean = characterBuffer.toString();
+        final String maybeBoolean = characterBuffer.toString();
         boolean returnValue;
         if ((returnValue = maybeBoolean.equals("true")) || maybeBoolean.equals("false")) {
             return returnValue;
@@ -109,10 +109,10 @@ public class Parser extends Lexer {
         if (current != '[') {
             throw new JsonParseException("no list found");
         }
-        List<Object> list = new ArrayList<>();
+        final List<Object> list = new ArrayList<>();
         advance();
         while (current != -1 && current != ']') {
-            Maybe<Object> maybeValue = parseValue();
+            final Maybe<Object> maybeValue = parseValue();
             if (!maybeValue.isPresent()) {
                 break;
             } else {
@@ -125,7 +125,7 @@ public class Parser extends Lexer {
     }
 
     public Map<?, ?> parseObject() {
-        HashMap<Object, Object> map = new HashMap<>();
+        final HashMap<Object, Object> map = new HashMap<>();
         skipWhitespace();
         if (current != '{') {
             throw new JsonParseException("no map found");
@@ -134,7 +134,7 @@ public class Parser extends Lexer {
         while (current != -1 && current != '}') {
             skipWhitespace();
             if (current == '"') {
-                String key = parseString();
+                final String key = parseString();
                 skipWhitespace();
                 if (current == ':') {
                     advance();
@@ -142,7 +142,7 @@ public class Parser extends Lexer {
                     throw new JsonParseException("expected colon");
                 }
                 skipWhitespace();
-                Maybe<Object> maybeValue = parseValue();
+                final Maybe<Object> maybeValue = parseValue();
                 maybeValue.ifPresent(value -> map.put(key, value));
             }
             advance();
@@ -152,7 +152,7 @@ public class Parser extends Lexer {
     }
 
     public Object parseAny() {
-        Maybe<Object> maybe = parseValue();
+        final Maybe<Object> maybe = parseValue();
         if (maybe.isPresent()) {
             return maybe.get();
         } else {
@@ -161,7 +161,7 @@ public class Parser extends Lexer {
     }
 
     private Maybe<Object> parseValue() {
-        Object value;
+        final Object value;
         skipWhitespace();
         switch (current) {
             case ']':
@@ -251,8 +251,8 @@ public class Parser extends Lexer {
     }
 
     private void parseEncoded() {
-        StringBuilder buf = new StringBuilder();
-        char codePoint = parseCodePoint();
+        final StringBuilder buf = new StringBuilder();
+        final char codePoint = parseCodePoint();
         buf.append(codePoint);
         if (Character.isHighSurrogate(codePoint)) {
             expect(() -> new JsonParseException("Invalid unicode codepoint at line " + linecount), '\\', 'u');

@@ -1,12 +1,13 @@
 package nl.sander.jsontoy2.java;
 
-import nl.sander.jsontoy2.java.constantpool.Utf8Entry;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * basic IO operations with runtime exceptions
+ */
 public class DataReader {
 
     protected long readS64(DataInputStream in) {
@@ -33,7 +34,7 @@ public class DataReader {
         }
     }
 
-    protected int readU16(DataInputStream in) {
+    protected int readUnsignedShort(DataInputStream in) {
         try {
             return in.readUnsignedShort();
         } catch (IOException e) {
@@ -47,11 +48,6 @@ public class DataReader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    protected Utf8Entry readUtf8Entry(DataInputStream in) {
-        int length = readU16(in);
-        return new Utf8Entry(readString(in, length));
     }
 
     protected String readString(DataInputStream in, int length) {

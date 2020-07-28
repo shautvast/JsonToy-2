@@ -7,12 +7,20 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Contains info from parsed bytecode
+ */
+public class ClassObject {
 
-public class ClassObject<T> {
+    private final ConstantPoolEntry[] constantPool;
+    private final Info[] fieldInfos;
+    private final Info[] methodInfos;
 
-    private ConstantPoolEntry[] constantPool;
-    private Info[] fieldInfos;
-    private Info[] methodInfos;
+    private ClassObject(ConstantPoolEntry[] constantPool, Info[] fieldInfos, Info[] methodInfos) {
+        this.constantPool = constantPool;
+        this.fieldInfos = fieldInfos;
+        this.methodInfos = methodInfos;
+    }
 
     private String getUtf8(int index) {
         return ((Utf8Entry) constantPool[index - 1]).getUtf8();
@@ -41,41 +49,44 @@ public class ClassObject<T> {
 
     public static class Builder<T> {
 
-        private final ClassObject<T> classObject = new ClassObject<>();
         private int constantPoolIndex = 0;
         private int fieldInfoIndex = 0;
         private int methodInfoIndex = 0;
 
-        public ClassObject<T> build() {
-            return classObject;
+        private ConstantPoolEntry[] constantPool;
+        private Info[] fieldInfos;
+        private Info[] methodInfos;
+
+        public ClassObject build() {
+            return new ClassObject(constantPool, fieldInfos, methodInfos);
         }
 
         public Builder<T> constantPoolCount(int constantPoolCount) {
-            classObject.constantPool = new ConstantPoolEntry[constantPoolCount - 1];
+            constantPool = new ConstantPoolEntry[constantPoolCount - 1];
             return this;
         }
 
         void constantPoolEntry(ConstantPoolEntry entry) {
-            classObject.constantPool[constantPoolIndex++] = entry;
+            constantPool[constantPoolIndex++] = entry;
         }
 
         public Builder<T> fieldInfoCount(int fieldInfoCount) {
-            classObject.fieldInfos = new Info[fieldInfoCount];
+            fieldInfos = new Info[fieldInfoCount];
             return this;
         }
 
         public Builder<T> fieldInfo(Info fieldInfo) {
-            classObject.fieldInfos[fieldInfoIndex++] = fieldInfo;
+            fieldInfos[fieldInfoIndex++] = fieldInfo;
             return this;
         }
 
         public Builder<T> methodInfoCount(int methodInfoCount) {
-            classObject.methodInfos = new Info[methodInfoCount];
+            methodInfos = new Info[methodInfoCount];
             return this;
         }
 
         public Builder<T> methodInfo(Info methodInfo) {
-            classObject.methodInfos[methodInfoIndex++] = methodInfo;
+            methodInfos[methodInfoIndex++] = methodInfo;
             return this;
         }
     }
