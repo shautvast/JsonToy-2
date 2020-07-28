@@ -2,8 +2,11 @@ package nl.sander.jsontoy2.java;
 
 import nl.sander.jsontoy2.java.constantpool.ConstantPoolEntry;
 import nl.sander.jsontoy2.java.constantpool.Utf8Entry;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,8 +37,48 @@ public class ClassObject {
 
     public Set<Method> getMethods() {
         return Arrays.stream(methodInfos)
-                .map(mi -> new Method(getUtf8(mi.getNameIndex()), getUtf8(mi.getDescriptorIndex())))
+                .map(this::createMethod)
                 .collect(Collectors.toSet());
+    }
+
+    @NotNull
+    private Method createMethod(Info mi) {
+        final String descriptor = getUtf8(mi.getDescriptorIndex());
+        final int split = descriptor.indexOf(')');
+        final List<String> parameters = getParameterTypes(descriptor.substring(0, split));
+
+        String returnType = descriptor.substring(split + 1);
+        returnType = returnType.substring(0, returnType.length() - 1);
+        return new Method(getUtf8(mi.getNameIndex()), parameters, returnType);
+    }
+
+    private List<String> getParameterTypes(String parameterDescriptor) {
+        List<String> result = new ArrayList<>();
+        boolean array = false;
+        for (int i = 1; i < parameterDescriptor.length(); i++) {
+            if (parameterDescriptor.charAt(i) == '[') {
+                array = true;
+            } else {
+                if (parameterDescriptor.charAt(i) == 'L') {
+                    int i2 = i;
+                    while (i2 < parameterDescriptor.length() && parameterDescriptor.charAt(i2) != ';') {
+                        i2++;
+                    }
+                    result.add(getArrayIndicator(array) + parameterDescriptor.substring(i, i2));
+                    array = false;
+                    i = i2;
+                } else {
+                    result.add(getArrayIndicator(array) + parameterDescriptor.charAt(i));
+                    array = false;
+                }
+            }
+        }
+        return result;
+    }
+
+    @NotNull
+    private String getArrayIndicator(boolean array) {
+        return array ? "[" : "";
     }
 
     public String toString() {
