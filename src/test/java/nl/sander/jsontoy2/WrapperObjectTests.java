@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class WrapperObjectTests {
 
@@ -22,9 +21,9 @@ public class WrapperObjectTests {
 
     @Test
     public void testBoolean() {
-//        BooleanBean trueBean = JsonReader.read(BooleanBean.class, "{\"value\": true}");
-//        assertTrue(trueBean.isValue());
-        // second call to read, must not recreate class definition, would not compile
+        BooleanBean trueBean = JsonReader.read(BooleanBean.class, "{\"value\": true}");
+        assertTrue(trueBean.isValue());
+        // second call to read, must not recreate class definition, (it would not compile)
         // so this test implicitly tests caching function too
         BooleanBean falseBean = JsonReader.read(BooleanBean.class, "{\"value2\": false}");
         assertFalse(falseBean.isValue());

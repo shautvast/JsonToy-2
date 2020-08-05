@@ -18,7 +18,10 @@ public class ReaderFactory {
         registerPrimitiveTypeReaders();
     }
 
-    public <T> void registerCustomReader(Class<T> type, JsonValueReader<T> reader) {
+    private ReaderFactory() {
+    }
+
+    public static <T> void registerCustomReader(Class<T> type, JsonValueReader<T> reader) {
         readers.put(type, reader);
     }
 

@@ -7,12 +7,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+/**
+ * Responsible for generating classes that parse into java beans.
+ * <p>
+ * TODO remove javassist both for analysing java beans and for generating bytecode
+ */
 public class JavaObjectReaderFactory {
     public static final String ROOT_PACKAGE = "serializer.";
     private final static CtClass DESERIALIZER_BASE = Javassist.getTypeDefinition(JsonValueReader.class);
@@ -21,13 +24,6 @@ public class JavaObjectReaderFactory {
     private static final Class<?>[] NO_PARAMS = {};
     private static final CtClass[] CT_NO_PARAMS = {};
     private final static CtClass OBJECT_CLASS = Javassist.getTypeDefinition(Object.class);
-    private final static CtClass BOOLEAN = Javassist.getTypeDefinition(boolean.class);
-    private final static CtClass INT = Javassist.getTypeDefinition(int.class);
-    private final static CtClass LONG = Javassist.getTypeDefinition(long.class);
-    private final static CtClass BYTE = Javassist.getTypeDefinition(byte.class);
-    private final static CtClass SHORT = Javassist.getTypeDefinition(short.class);
-    private final static CtClass FLOAT = Javassist.getTypeDefinition(float.class);
-    private final static CtClass DOUBLE = Javassist.getTypeDefinition(double.class);
 
     @SuppressWarnings("unchecked")
     static <T> JsonValueReader<T> createReaderInstance(Class<T> type) {
@@ -56,7 +52,7 @@ public class JavaObjectReaderFactory {
     private static CtMethod createReadJsonMethod(CtClass serializerClass, Class<?> type) {
         try {
             String readMethodBodySource = createReadMethodBodySource(type);
-            System.out.println(readMethodBodySource);
+//            System.out.println(readMethodBodySource);
             return CtNewMethod.make(Modifier.PUBLIC, OBJECT_CLASS, "read", PARSER_PARAM, NO_EXCEPTIONS, readMethodBodySource, serializerClass);
         } catch (CannotCompileException e) {
             throw new ClassCreationException(e);
@@ -110,7 +106,7 @@ public class JavaObjectReaderFactory {
         }
     }
 
-
+    //should be reinstated
     private static String genericType(CtField field) {
         try {
             if (!Javassist.isCollection(field.getType())) {
@@ -136,10 +132,6 @@ public class JavaObjectReaderFactory {
 
     private static String capitalize(String lowercase) {
         return lowercase.substring(0, 1).toUpperCase() + lowercase.substring(1);
-    }
-
-    private static Set<String> createTypeList(Class<?>... classes) {
-        return Arrays.stream(classes).map(Class::getName).collect(Collectors.toSet());
     }
 
     /*
