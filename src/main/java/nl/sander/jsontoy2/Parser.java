@@ -38,7 +38,7 @@ public class Parser extends Lexer {
 
     public Integer parseInteger() {
         final String value = parseNumber();
-        return Double.valueOf(value).intValue();
+        return Integer.valueOf(value);
     }
 
     public Long parseLong() {
@@ -125,6 +125,10 @@ public class Parser extends Lexer {
     }
 
     public Map<?, ?> parseObject() {
+        return parseObject(null);
+    }
+
+    public Map<?, ?> parseObject(Class<?> type) {
         final HashMap<Object, Object> map = new HashMap<>();
         skipWhitespace();
         if (current != '{') {
@@ -142,8 +146,13 @@ public class Parser extends Lexer {
                     throw new JsonParseException("expected colon");
                 }
                 skipWhitespace();
-                final Maybe<Object> maybeValue = parseValue();
-                maybeValue.ifPresent(value -> map.put(key, value));
+                final Maybe<Object> maybeValue;
+                try {
+                    maybeValue = type == null ? parseValue() : parseValue(type.getDeclaredField(key).getType());
+                    maybeValue.ifPresent(value -> map.put(key, value));
+                } catch (NoSuchFieldException e) {
+                    throw new JsonParseException(e);
+                }
             }
             advance();
             skipWhitespace();
@@ -181,12 +190,26 @@ public class Parser extends Lexer {
                 break;
             default: String numeric = parseNumber();
                 double doubleValue = Double.parseDouble(numeric);
-                if ((int) doubleValue == doubleValue) {
-                    value = (int) doubleValue;
+                if ((long) doubleValue == doubleValue) {
+                    value = (long) doubleValue;
                 } else {
                     value = doubleValue;
                 }
         }
+        return Maybe.of(value);
+    }
+
+    private Maybe<Object> parseValue(Class<?> type) {
+        final Object value;
+        skipWhitespace();
+
+        JsonValueReader<?> reader = ReaderFactory.getReader(type);
+        if (reader != null) {
+            value = reader.read(this);
+        } else {
+            value = parseObject();
+        }
+
         return Maybe.of(value);
     }
 

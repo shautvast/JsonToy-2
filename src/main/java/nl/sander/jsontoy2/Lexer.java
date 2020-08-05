@@ -37,6 +37,10 @@ public class Lexer implements AutoCloseable {
         }
     }
 
+    void eatUntil(char until) {
+        eatUntil(new char[]{until});
+    }
+
     void eatUntil(char... until) {
         while (current > -1 && (!contains(until, current) | Character.isWhitespace(current))) {
             advance();
@@ -66,5 +70,10 @@ public class Lexer implements AutoCloseable {
         } catch (IOException e) {
             throw new JsonParseException(e);
         }
+    }
+
+    @SuppressWarnings("unused")
+    public byte current() {
+        return current;
     }
 }

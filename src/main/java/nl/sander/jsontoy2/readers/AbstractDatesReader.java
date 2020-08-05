@@ -1,5 +1,7 @@
 package nl.sander.jsontoy2.readers;
 
+import nl.sander.jsontoy2.JsonValueReader;
+
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -7,7 +9,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.function.Supplier;
 
-public abstract class AbstractDatesReader<T> {
+public abstract class AbstractDatesReader<T> extends JsonValueReader<T> {
 
     private static final ZoneId zone = ZoneId.systemDefault();
 

@@ -6,7 +6,7 @@ import nl.sander.jsontoy2.Parser;
 import java.util.List;
 
 @SuppressWarnings("rawtypes")
-public class ListReader implements JsonValueReader<List> {
+public class ListReader extends JsonValueReader<List> {
     @Override
     public List<?> read(Parser parser) {
         return parser.parseArray();

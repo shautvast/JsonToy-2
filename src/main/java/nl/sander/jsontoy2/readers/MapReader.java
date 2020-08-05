@@ -6,7 +6,7 @@ import nl.sander.jsontoy2.Parser;
 import java.util.Map;
 
 @SuppressWarnings("rawtypes")
-public class MapReader implements JsonValueReader<Map> {
+public class MapReader extends JsonValueReader<Map> {
     @Override
     public Map read(Parser parser) {
         return parser.parseObject();
