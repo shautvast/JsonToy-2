@@ -32,7 +32,7 @@ public class ReaderFactory {
     static <T> JsonValueReader<?> getReader(Class<T> type) {
         if (Map.class.isAssignableFrom(type)) {
             return MAPREADER;
-        } else if (List.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type)) {
+        } else if (List.class.isAssignableFrom(type) || Set.class.isAssignableFrom(type) || type.isArray()) {
             return LISTREADER;
         } else {
             return readers.computeIfAbsent(type, k -> {

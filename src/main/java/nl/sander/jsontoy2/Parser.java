@@ -148,7 +148,7 @@ public class Parser extends Lexer {
                 skipWhitespace();
                 final Maybe<Object> maybeValue;
                 try {
-                    maybeValue = type == null ? parseValue() : parseValue(type.getDeclaredField(key).getType());
+                    maybeValue = type == null ? parseValue() : Maybe.of(JsonReader.read(type.getDeclaredField(key).getType(), this));
                     maybeValue.ifPresent(value -> map.put(key, value));
                 } catch (NoSuchFieldException e) {
                     throw new JsonParseException(e);

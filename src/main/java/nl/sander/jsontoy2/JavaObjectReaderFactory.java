@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +53,7 @@ public class JavaObjectReaderFactory {
     private static CtMethod createReadJsonMethod(CtClass serializerClass, Class<?> type) {
         try {
             String readMethodBodySource = createReadMethodBodySource(type);
-//            System.out.println(readMethodBodySource);
+            System.out.println(readMethodBodySource);
             return CtNewMethod.make(Modifier.PUBLIC, OBJECT_CLASS, "read", PARSER_PARAM, NO_EXCEPTIONS, readMethodBodySource, serializerClass);
         } catch (CannotCompileException e) {
             throw new ClassCreationException(e);
@@ -99,11 +100,22 @@ public class JavaObjectReaderFactory {
             return "getFloat(\"" + fieldName + "\",object)";
         } else if (fieldType == double.class) {
             return "getDouble(\"" + fieldName + "\",object)";
-        } else if (Set.class.isAssignableFrom(fieldType)) {
-            return "getSet(\"" + fieldName + "\",object)";
         } else {
-            return "(" + fieldType.getName() + ")(object.get(\"" + fieldName + "\"))";
+            String fieldTypeName = field.getType().getName();
+            if (Set.class.isAssignableFrom(fieldType)) {
+                return "(" + fieldTypeName + ")getSet(\"" + fieldName + "\"," + fieldTypeName + ".class,object)";
+            } else if (List.class.isAssignableFrom(fieldType)) {
+                return "(" + fieldTypeName + ")getList(\"" + fieldName + "\"," + fieldTypeName + ".class,object)";
+            } else if (fieldType.isArray()) {
+                return "(" + format(fieldTypeName) + "[])getArray(\"" + fieldName + "\"," + format(fieldTypeName) + ".class,object)";
+            } else {
+                return "(" + fieldTypeName + ")(object.get(\"" + fieldName + "\"))";
+            }
         }
+    }
+
+    private static String format(String arrayTypeExpr) {
+        return arrayTypeExpr.substring(2).substring(0, arrayTypeExpr.length() - 3);
     }
 
     //should be reinstated
