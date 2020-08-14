@@ -105,6 +105,10 @@ public class Parser extends Lexer {
     }
 
     public List<?> parseArray() {
+        return parseArray(null);
+    }
+
+    public List<?> parseArray(Class<?> genericType) {
         skipWhitespace();
         if (current != '[') {
             throw new JsonParseException("no list found");
@@ -112,7 +116,7 @@ public class Parser extends Lexer {
         final List<Object> list = new ArrayList<>();
         advance();
         while (current != -1 && current != ']') {
-            final Maybe<Object> maybeValue = parseValue();
+            final Maybe<Object> maybeValue = genericType == null ? parseValue() : parseValue(genericType);
             if (!maybeValue.isPresent()) {
                 break;
             } else {

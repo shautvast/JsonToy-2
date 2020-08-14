@@ -53,7 +53,7 @@ public class JavaObjectReaderFactory {
     private static CtMethod createReadJsonMethod(CtClass serializerClass, Class<?> type) {
         try {
             String readMethodBodySource = createReadMethodBodySource(type);
-            System.out.println(readMethodBodySource);
+//            System.out.println(readMethodBodySource);
             return CtNewMethod.make(Modifier.PUBLIC, OBJECT_CLASS, "read", PARSER_PARAM, NO_EXCEPTIONS, readMethodBodySource, serializerClass);
         } catch (CannotCompileException e) {
             throw new ClassCreationException(e);

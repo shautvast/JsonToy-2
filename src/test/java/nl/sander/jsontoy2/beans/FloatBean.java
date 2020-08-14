@@ -7,6 +7,11 @@ public class FloatBean {
     public FloatBean() {
     }
 
+    public FloatBean(float value, Float value2) {
+        this.value = value;
+        this.value2 = value2;
+    }
+
     public float getValue() {
         return value;
     }
