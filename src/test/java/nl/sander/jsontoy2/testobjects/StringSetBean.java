@@ -1,7 +1,10 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import java.util.Set;
 
+/*
+ * test object
+ */
 public class StringSetBean {
     private Set<String> value;
 

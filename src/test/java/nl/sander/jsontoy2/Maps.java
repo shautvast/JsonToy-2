@@ -30,7 +30,7 @@ public class Maps {
         Map<String, Object> map = JsonReader.read(Map.class, "{\"value1\" : \"jason\" ,\n \"value2\":1}");
         Map<String, Object> expected = new HashMap<>();
         expected.put("value1", "jason");
-        expected.put("value2", 1);
+        expected.put("value2", 1L);
         assertEquals(expected, map);
     }
 
@@ -40,9 +40,9 @@ public class Maps {
     }
 
     @Test
-    public void singleInts() {
-        Map<String, Integer> map = JsonReader.read(Map.class, " { \"1\":2 }");
-        Map<String, Integer> expected = Collections.singletonMap("1", 2);
+    public void singleLongs() {
+        Map<String, Long> map = JsonReader.read(Map.class, " { \"1\":2 }");
+        Map<String, Long> expected = Collections.singletonMap("1", 2L);
         assertEquals(expected, map);
     }
 
@@ -63,7 +63,7 @@ public class Maps {
     public void listInMap() {
         Map<String, List> list = JsonReader.read(Map.class, " { \"list\" : [ 1 ] } ");
         Map<String, List> expected = new HashMap<>();
-        expected.put("list", List.of(1));
+        expected.put("list", List.of(1L));
 
         assertEquals(expected, list);
     }

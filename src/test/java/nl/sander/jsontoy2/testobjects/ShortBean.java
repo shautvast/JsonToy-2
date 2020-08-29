@@ -1,5 +1,8 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
+/*
+ * test object
+ */
 public class ShortBean {
     private short value;
     private Short value2;

@@ -1,9 +1,12 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/*
+ * test object
+ */
 public class StringMapBean {
 
     private Map<String, String> map = new HashMap<>();

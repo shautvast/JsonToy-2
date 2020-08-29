@@ -1,5 +1,8 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
+/*
+ * test object
+ */
 public class SimpleBean {
     String data1;
     String data2;

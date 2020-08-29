@@ -7,23 +7,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Ints {
 
     @Test
-    public void testSimpleInt(){
-        assertEquals(1,JsonReader.read(Integer.class,"1"));
+    public void testSimpleInt() {
+        assertEquals(1, JsonReader.read(Integer.class, "1"));
     }
 
     @Test
-    public void testSimplePrimitiveInt(){
-        assertEquals(1,JsonReader.read(int.class,"1"));
+    public void testSimplePrimitiveInt() {
+        assertEquals(1, JsonReader.read(int.class, "1"));
     }
 
     @Test
-    public void testSimpleNegativeInt(){
-        assertEquals(-20001,JsonReader.read(Integer.class,"-20001"));
+    public void testSimpleNegativeInt() {
+        assertEquals(-20001, JsonReader.read(Integer.class, "-20001"));
     }
 
     @Test
-    public void testSimpleNegativePrimitiveInt(){
-        assertEquals(Integer.MIN_VALUE,JsonReader.read(int.class,"-2147483684"));
+    public void testSimpleNegativePrimitiveInt() {
+        assertEquals(Integer.MIN_VALUE, JsonReader.read(int.class, "-2147483684"));
     }
 
     @Test

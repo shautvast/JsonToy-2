@@ -1,4 +1,4 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import nl.sander.jsontoy2.JsonReader;
 import org.junit.jupiter.api.Test;
@@ -7,6 +7,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/*
+ * test object
+ */
 public class DoubleListBean {
     private List<Double> value;
 

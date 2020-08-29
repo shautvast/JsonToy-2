@@ -1,7 +1,10 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import java.util.Objects;
 
+/*
+ * test object
+ */
 public class BooleanBean {
     private boolean value;
     private Boolean value2;
@@ -43,6 +46,6 @@ public class BooleanBean {
     public int hashCode() {
         return Objects.hash(value, value2);
     }
-    
+
 
 }

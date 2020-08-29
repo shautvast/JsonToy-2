@@ -38,7 +38,7 @@ public class Parser extends Lexer {
 
     public Integer parseInteger() {
         final String value = parseNumber();
-        return Integer.valueOf(value);
+        return Double.valueOf(value).intValue();
     }
 
     public Long parseLong() {

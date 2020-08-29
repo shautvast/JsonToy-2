@@ -38,23 +38,23 @@ public class Lists {
     }
 
     @Test
-    public void singleInt() {
-        List<Integer> list = JsonReader.read(List.class, " [ 1 ]");
-        List<Integer> expected = List.of(1);
+    public void singleLong() {
+        List<Long> list = JsonReader.read(List.class, " [ 1 ]");
+        List<Long> expected = List.of(1L);
         assertEquals(expected, list);
     }
 
     @Test
-    public void multipleInts() {
-        List<Integer> list = JsonReader.read(List.class, "[1,2]");
-        List<Integer> expected = List.of(1, 2);
+    public void multipleLongs() {
+        List<Long> list = JsonReader.read(List.class, "[1,2]");
+        List<Long> expected = List.of(1L, 2L);
         assertEquals(expected, list);
     }
 
     @Test
-    public void intDoubleBooleanString() {
+    public void longDoubleBooleanString() {
         List<Integer> list = JsonReader.read(List.class, "[1, 2.5,false,    \"hello jason\"]");
-        List<?> expected = List.of(1, 2.5, false, "hello jason");
+        List<?> expected = List.of(1L, 2.5, false, "hello jason");
         assertEquals(expected, list);
     }
 

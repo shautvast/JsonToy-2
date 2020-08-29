@@ -41,7 +41,6 @@ public class Javassist {
         }
     }
 
-    @SuppressWarnings("unused")
     public static CtClass getTypeDefinition(String type) {
         try {
             return pool.get(type);
@@ -109,6 +108,7 @@ public class Javassist {
     public static List<CtMethod> getGetters(CtClass type) {
         List<CtMethod> methods = new ArrayList<>();
         List<CtField> fields = getAllFields(type);
+
         for (CtField field : fields) {
             try {
                 CtMethod method = type.getMethod(getGetterMethod(field), getDescription(field));

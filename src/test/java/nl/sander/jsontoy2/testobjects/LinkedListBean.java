@@ -1,7 +1,10 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import java.util.LinkedList;
 
+/*
+ * test object
+ */
 public class LinkedListBean {
     private LinkedList<String> list;
 

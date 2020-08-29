@@ -1,7 +1,10 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import java.util.List;
 
+/*
+ * test object
+ */
 public class FloatListBean {
     private List<Float> value;
 

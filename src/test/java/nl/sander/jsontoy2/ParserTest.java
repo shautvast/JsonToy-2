@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ParserTest {
+class ParserTest {
     @Test
     public void testFloat() {
         assertEquals(31.415927F, new Parser(getInputStream("31.415927")).parseFloat());

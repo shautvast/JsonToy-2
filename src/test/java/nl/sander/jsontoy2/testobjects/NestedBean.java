@@ -1,7 +1,10 @@
-package nl.sander.jsontoy2.beans;
+package nl.sander.jsontoy2.testobjects;
 
 import java.util.Objects;
 
+/*
+ * test object
+ */
 public class NestedBean {
 
     private InnerBean value;
